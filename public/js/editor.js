@@ -7,6 +7,7 @@
    · Save (or Ctrl/Cmd+S), then Copy link to share /p/<id>
    ========================================================================== */
 import { ProposalPage, setPath, getPath } from "./page.js";
+import { newItem, newBlock, newSection, listKey, listLimit, LIMITS, SECTION_TYPES } from "./model.js";
 import { api, AuthError, getToken, shareUrl, copyText, uploadImage } from "./admin-api.js";
 
 let page, rec, dirty = false, saving = false;
@@ -51,7 +52,7 @@ function buildToolbar(){
       <button class="ed-btn ghost" id="edCopy" type="button">Copy share link</button>
       <button class="ed-btn primary" id="edSave" type="button">Save</button>
     </div>
-    <div class="ed-hint">Click text to edit · hover images to replace · drag seat markers · click colour chips</div>`;
+    <div class="ed-hint">Click text to edit · hover images to replace · drag seat markers · click colour chips · use + / × / arrows to add, delete and reorder designs, sections, views, details and cards</div>`;
   document.body.appendChild(bar);
   const title = $("#edTitle");
   title.value = rec.title;
@@ -119,6 +120,7 @@ function decorate(pg, opts = {}){
   bindLogos();
   bindMarkers();
   bindSwatches();
+  bindCommands();
 }
 
 /* ---- text ---- */
@@ -152,17 +154,14 @@ function bindText(root){
       const path = el.dataset.edit;
       const trimmed = el.textContent.replace(/\s+/g, " ").trim();
       if (trimmed !== el.textContent){ el.textContent = trimmed; setPath(page.data, path, trimmed); }
-      if (/^designs\.\d+\.callouts\.\d+\.t$|^elementLabels\.|^angles\.\d+\.name$/.test(path)) syncAlts(path, trimmed);
+      if (/\.(items\.\d+\.name|callouts\.\d+\.t)$/.test(path)) syncAlts(path, trimmed);
     });
     /* don't let clicks inside text trigger the card/tab underneath */
     el.addEventListener("click", e => e.stopPropagation());
   });
 }
 function syncAlts(path, val){
-  const m = path.match(/^(designs\.\d+)\.callouts\.(\d+)\.t$/);
-  const imgPath = m ? `${m[1]}.callouts.${m[2]}.img`
-    : path.startsWith("elementLabels.") ? `designs.${page.di}.images.${path.split(".")[1]}`
-    : `designs.${page.di}.images.angle${+path.split(".")[1] + 1}`;
+  const imgPath = path.replace(/\.(name|t)$/, ".img");
   document.querySelectorAll(`[data-img-path="${imgPath}"]`).forEach(s => {
     s.dataset.alt = val; const img = s.querySelector(":scope > img"); if (img) img.alt = val;
   });
@@ -243,8 +242,9 @@ function bindLogos(){
 
 /* ---- seat markers: drag to reposition ---- */
 function bindMarkers(){
-  const stage = document.getElementById("sigStage");
-  if (!stage) return;
+  document.querySelectorAll(".sig-wrap[data-seat]").forEach(wrap => {
+  const sid = wrap.dataset.seat;
+  const stage = wrap.querySelector(".sig-stage");
   stage.querySelectorAll(".marker").forEach(mk => {
     mk.classList.add("ed-drag");
     mk.title = "Drag to move";
@@ -258,7 +258,7 @@ function bindMarkers(){
         const y = Math.min(98, Math.max(2, (ev.clientY - r.top) / r.height * 100));
         const pos = { x: Math.round(x * 10) / 10, y: Math.round(y * 10) / 10 };
         mk.style.left = pos.x + "%"; mk.style.top = pos.y + "%";
-        setPath(page.data, `designs.${page.di}.callouts.${i}.pos`, pos);
+        setPath(page.data, `designs.${page.di}.blocks.${sid}.callouts.${i}.pos`, pos);
         page.drawSigLines();
       };
       const up = () => {
@@ -271,6 +271,7 @@ function bindMarkers(){
       mk.addEventListener("pointerup", up);
       mk.addEventListener("pointercancel", up);
     });
+  });
   });
 }
 
@@ -309,4 +310,110 @@ function toHex(c){
   if (/^#[0-9a-f]{6}$/i.test(c)) return c;
   if (/^#[0-9a-f]{3}$/i.test(c)) return "#" + [...c.slice(1)].map(ch => ch + ch).join("");
   return "#808080";
+}
+
+/* ---- structure: add / remove / reorder designs, sections and items ---- */
+const ITEM_NOUN = { gallery: "view", seat: "detail", grid: "card" };
+const clone = o => JSON.parse(JSON.stringify(o));
+const swap = (arr, i, j) => { if (j < 0 || j >= arr.length) return false; [arr[i], arr[j]] = [arr[j], arr[i]]; return true; };
+
+function bindCommands(){
+  const main = document.getElementById("main");
+  if (main.dataset.cmdBound) return;
+  main.dataset.cmdBound = "1";
+  main.addEventListener("click", e => {
+    const b = e.target.closest("[data-cmd]");
+    if (!b || !main.contains(b)) return;
+    e.preventDefault(); e.stopPropagation();
+    runCommand(b.dataset.cmd, b.dataset);
+  });
+}
+
+function runCommand(cmd, a){
+  const D = page.data;
+  const design = D.designs[page.di];
+  const sec = a.sid ? D.sections.find(s => s.id === a.sid) : null;
+  const dir = +a.dir || 0;
+  let keepScroll = true;
+
+  switch (cmd){
+    case "design-add": {
+      if (D.designs.length >= LIMITS.designs) return;
+      const copy = clone(design);
+      copy.name = `${design.name} copy`;
+      D.designs.splice(page.di + 1, 0, copy);
+      page.di += 1; page.ai = {};
+      toast(`Design ${String(page.di + 1).padStart(2, "0")} added as a copy of “${design.name}” — now change its images and text`);
+      break;
+    }
+    case "design-del": {
+      if (D.designs.length <= 1) return;
+      if (!confirm(`Delete design “${design.name}” with all its images and text?`)) return;
+      D.designs.splice(page.di, 1);
+      page.di = Math.max(0, page.di - 1); page.ai = {};
+      break;
+    }
+    case "design-move": {
+      if (!swap(D.designs, page.di, page.di + dir)) return;
+      page.di += dir;
+      break;
+    }
+    case "sec-add": {
+      const s = newSection(a.type);
+      D.sections.splice(+a.at, 0, s);
+      D.designs.forEach(d => { d.blocks[s.id] = newBlock(a.type); });
+      toast(`${SECTION_TYPES[a.type].label} added to every design`);
+      break;
+    }
+    case "sec-del": {
+      if (!sec) return;
+      if (!confirm(`Delete the section “${sec.title}”? It is removed from ALL designs, with its images and text.`)) return;
+      D.sections = D.sections.filter(s => s !== sec);
+      D.designs.forEach(d => { delete d.blocks[sec.id]; });
+      break;
+    }
+    case "sec-move": {
+      const i = D.sections.indexOf(sec);
+      if (!swap(D.sections, i, i + dir)) return;
+      keepScroll = false;
+      break;
+    }
+    case "item-add": {
+      const list = design.blocks[sec.id][listKey(sec.type)];
+      if (list.length >= listLimit(sec.type)) return;
+      list.push(newItem(sec.type, list.length));
+      if (sec.type === "gallery") page.ai[sec.id] = list.length - 1;
+      break;
+    }
+    case "item-del": {
+      const list = design.blocks[sec.id][listKey(sec.type)];
+      const i = +a.i, it = list[i];
+      if (!confirm(`Delete this ${ITEM_NOUN[sec.type]} (“${it.name ?? it.t}”) from ${design.name}?`)) return;
+      list.splice(i, 1);
+      if (sec.type === "gallery") page.ai[sec.id] = Math.max(0, i - 1);
+      break;
+    }
+    case "item-move": {
+      const list = design.blocks[sec.id][listKey(sec.type)];
+      const i = +a.i;
+      if (!swap(list, i, i + dir)) return;
+      if (sec.type === "gallery") page.ai[sec.id] = i + dir;
+      break;
+    }
+    default: return;
+  }
+  markDirty();
+  rerender(keepScroll, sec?.id);
+}
+
+/* re-render and keep the edited section in view */
+function rerender(keepScroll, sid){
+  const anchor = sid && document.querySelector(`section[data-sid="${sid}"]`);
+  const before = anchor ? anchor.getBoundingClientRect().top : null;
+  const y = window.scrollY;
+  page.render();
+  const after = sid && document.querySelector(`section[data-sid="${sid}"]`);
+  if (!keepScroll && after){ after.scrollIntoView({ block: "start", behavior: "smooth" }); return; }
+  if (after && before !== null) window.scrollTo(0, window.scrollY + after.getBoundingClientRect().top - before);
+  else window.scrollTo(0, y);
 }

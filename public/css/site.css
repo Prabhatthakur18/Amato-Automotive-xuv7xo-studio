@@ -187,7 +187,7 @@ header{
   padding:0;background:none;text-shadow:0 2px 12px rgba(0,0,0,.95);pointer-events:none;
 }
 .angle-count b{color:var(--copper-hi);font-weight:500}
-.angle-thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--hair);border-top:none}
+.angle-thumbs{display:grid;grid-template-columns:repeat(var(--n,3),minmax(0,1fr));gap:0;border:1px solid var(--hair);border-top:none}
 .angle-thumb{
   position:relative;cursor:pointer;background:var(--bg-2);border:none;border-right:1px solid var(--hair);
   padding:0;text-align:left;transition:background .25s;color:inherit;font:inherit;
@@ -492,4 +492,11 @@ footer{
   footer{min-height:88px;padding:20px;}
   .footer-logo.amato img{height:26px;max-height:26px;}
   .footer-logo.mahindra img{height:48px;max-height:48px;}
+}
+
+/* variable item counts (designs / views) */
+.dtabs{flex-wrap:wrap}
+@media (max-width:640px){
+  .angle-thumbs{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(120px,1fr);overflow-x:auto;scrollbar-width:none}
+  .angle-thumbs::-webkit-scrollbar{display:none}
 }

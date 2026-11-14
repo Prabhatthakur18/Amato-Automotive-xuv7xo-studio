@@ -67,11 +67,15 @@ async function writeIndex(list){
 }
 const meta = r => ({ id: r.id, title: r.title, vehicle: r.content?.vehicle, createdAt: r.createdAt, updatedAt: r.updatedAt });
 
-/* basic shape check so a bad save can't break a shared page */
+/* basic shape check so a bad save can't break a shared page (schema 2, see public/js/model.js) */
 function validContent(c){
-  return c && typeof c === "object" && Array.isArray(c.designs) && c.designs.length > 0 &&
-    c.designs.every(d => Array.isArray(d.callouts) && Array.isArray(d.palette) && d.images) &&
-    Array.isArray(c.angles) && c.sections && c.labels && c.elementLabels && c.brand;
+  if (!c || typeof c !== "object" || c.schema !== 2) return false;
+  if (!Array.isArray(c.sections) || !Array.isArray(c.designs) || !c.designs.length) return false;
+  if (c.designs.length > 8 || c.sections.length > 10) return false;
+  const types = { gallery: "items", seat: "callouts", grid: "items" };
+  const ok = c.sections.every(s => s && typeof s.id === "string" && types[s.type]);
+  return ok && c.designs.every(d => d && Array.isArray(d.palette) && d.blocks &&
+    c.sections.every(s => Array.isArray(d.blocks[s.id]?.[types[s.type]])));
 }
 
 /* ------------------------------ handler ------------------------------ */

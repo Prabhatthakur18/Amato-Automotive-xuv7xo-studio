@@ -16,6 +16,20 @@ replace images and text, and share a link per customer. The UI/UX is the same as
 drag the numbered seat markers · click a colour chip (+ / × to add or remove) ·
 click a logo to replace it · **Save** (or Ctrl/Cmd+S) · **Copy share link**.
 
+**Structure is editable too:**
+
+| What | Add | Delete | Reorder | Scope |
+|---|---|---|---|---|
+| Designs (Design 01, 02…) | *+ Add design* (copies the current one) | *× Delete design* | ◀ ▶ | — |
+| Sections | *+ Add section here* → Image gallery / Seat diagram / Card grid | *× Delete section* | ↑ ↓ | all designs (contents are per design) |
+| Gallery views (Front cabin, Rear cabin, Boot…) | *+ Add view* | *× Delete view* | ◀ ▶ | current design |
+| Seat details (numbered callouts) | *+ Add detail* | × on the callout | ◀ ▶ | current design |
+| Cards (Door panel, Floor mats…) | *+ Add card* | × on the card | ◀ ▶ | current design |
+
+Limits: 8 designs, 10 sections, 8 views, 10 seat details, 16 cards per section, 4 colours.
+Empty sections are hidden on the customer page. Content model: `public/js/model.js` (schema 2;
+older proposals are upgraded automatically when opened).
+
 The master template is never modified. Every proposal is a separate copy with its own link.
 Uploaded images are resized and converted to WebP in the browser before upload.
 
@@ -48,6 +62,7 @@ npx netlify dev        # http://localhost:8888
 ```
 public/index.html        page shell (viewer + editor)
 public/js/page.js        render engine: same markup as the original, driven by JSON
+public/js/model.js       content model, limits, defaults, schema-1 → 2 migration
 public/js/editor.js      in-place editor
 public/js/admin-api.js   auth, API, image compression
 public/admin/index.html  dashboard

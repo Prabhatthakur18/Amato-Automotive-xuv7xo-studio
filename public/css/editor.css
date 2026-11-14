@@ -71,3 +71,35 @@ body.editing .angle-hud{pointer-events:auto}
   transition:opacity .25s, transform .25s;max-width:90vw}
 .ed-toast.show{opacity:1;transform:translate(-50%,0)}
 .ed-toast.bad{border-color:#e2a33a;color:#f3c77a}
+
+/* ---------- structure controls (add / delete / reorder) ---------- */
+.ed-ctl{font:500 8.5px var(--wide);letter-spacing:.18em;text-transform:uppercase;color:var(--txt);cursor:pointer;
+  background:rgba(14,12,13,.9);border:1px solid var(--line);padding:7px 10px;border-radius:2px;white-space:nowrap;line-height:1.2}
+.ed-ctl:hover{border-color:var(--copper-hi);color:#fff;background:rgba(176,30,46,.35)}
+.ed-ctl.danger:hover{border-color:#e2a33a;color:#f3c77a;background:rgba(226,163,58,.12)}
+.ed-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:14px}
+.ed-note{font:300 11px var(--body);color:var(--dim)}
+.ed-design-tools{margin-top:12px}
+
+.sec-head{flex-wrap:wrap}
+.ed-sec-tools{display:flex;align-items:center;gap:6px;align-self:center}
+.ed-sec-type{font:400 8px var(--wide);letter-spacing:.22em;text-transform:uppercase;color:var(--copper-hi);margin-right:6px;border:1px solid rgba(176,30,46,.4);padding:5px 8px}
+
+.ed-add-sec{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin:6px 0 54px;padding:14px;
+  border:1px dashed rgba(176,30,46,.35);opacity:.55;transition:opacity .2s}
+.ed-add-sec:hover{opacity:1}
+.ed-add-sec > span{font:400 8.5px var(--wide);letter-spacing:.24em;text-transform:uppercase;color:var(--dim);margin-right:6px}
+section + .ed-add-sec{margin-top:-30px}
+
+.ed-empty{padding:40px;border:1px dashed var(--line);text-align:center;color:var(--dim);font-size:13px;display:flex;gap:14px;justify-content:center;align-items:center}
+
+/* per-item tools: callouts + cards (top-right, on hover) */
+.callout, .el-card{position:relative}
+.callout .ed-item-tools, .el-card .ed-item-tools{position:absolute;top:8px;right:8px;z-index:12;display:flex;gap:4px;opacity:0;transition:opacity .2s}
+.callout:hover .ed-item-tools, .el-card:hover .ed-item-tools, .ed-item-tools:focus-within{opacity:1}
+.callout .ed-item-tools .ed-ctl{padding:5px 7px}
+.ed-gallery-tools .ed-item-tools{display:flex;gap:6px}
+
+.ed-add-card{display:flex;align-items:center;justify-content:center;min-height:220px;cursor:pointer;
+  border:1px dashed var(--line);background:transparent;color:var(--dim);font:400 10px var(--wide);letter-spacing:.24em;text-transform:uppercase}
+.ed-add-card:hover{border-color:var(--copper-hi);color:var(--txt)}

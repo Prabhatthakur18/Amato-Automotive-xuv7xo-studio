@@ -172,7 +172,9 @@ $("#logout").onclick = () => { setToken(""); showLogin(); };
 async function loadMaster(){
   const m = await fetch("/default.json").then(r => r.json());
   $("#masterTitle").textContent = `${m.vehicle} — Master template`;
-  $("#masterShot").src = m.designs[0]?.images?.angle1 || "";
+  const blocks = m.designs[0]?.blocks || {};
+  const firstImg = m.sections.map(s => blocks[s.id]).map(b => b?.items?.find(i => i.img)?.img || b?.img).find(Boolean);
+  $("#masterShot").src = firstImg || "";
   $("#masterDesigns").innerHTML = m.designs.map((d, i) => `<span>Design ${String(i+1).padStart(2,"0")} · ${esc(d.name)}</span>`).join("");
 }
 
