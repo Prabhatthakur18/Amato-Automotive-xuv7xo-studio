@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta name="robots" content="noindex, nofollow"/>
+<title>Proposals — Amato Automotive × Mahindra</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Michroma&amp;family=Archivo:wght@200;300;400;500&amp;family=Inter:wght@300;400;500&amp;display=swap" rel="stylesheet"/>
+<link href="/css/site.css" rel="stylesheet"/>
+<style>
+  [hidden]{display:none!important}
+  .dash{max-width:1180px;margin:0 auto;padding:64px 40px 120px}
+  .dash h1{font:200 clamp(30px,4vw,48px) var(--wide);letter-spacing:.2em;text-transform:uppercase;line-height:1}
+  .dash .lead{margin-top:14px;color:var(--dim);font-size:13.5px;max-width:620px}
+  .btn{font:500 9.5px var(--wide);letter-spacing:.22em;text-transform:uppercase;padding:12px 18px;cursor:pointer;
+    border:1px solid var(--line);background:transparent;color:var(--txt);text-decoration:none;white-space:nowrap;display:inline-flex;align-items:center;gap:8px}
+  .btn:hover{border-color:var(--copper-hi);color:#fff}
+  .btn.primary{background:var(--copper);border-color:var(--copper);color:#fff}
+  .btn.primary:hover{background:var(--copper-hi)}
+  .btn.danger:hover{border-color:#e2a33a;color:#f3c77a}
+  .btn[disabled]{opacity:.5;pointer-events:none}
+
+  /* master template card */
+  .master{margin-top:44px;display:grid;grid-template-columns:1.25fr 1fr;border:1px solid var(--line);background:var(--bg-2)}
+  .master .shot{position:relative;min-height:300px;overflow:hidden;background:#0b090a}
+  .master .shot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(.85) brightness(.8)}
+  .master .shot .badge{position:absolute;top:16px;left:16px;font:500 9px var(--wide);letter-spacing:.26em;text-transform:uppercase;
+    background:rgba(8,8,8,.75);border:1px solid var(--line);padding:7px 12px;color:var(--copper-hi)}
+  .master .info{padding:34px 34px 30px;display:flex;flex-direction:column;gap:16px}
+  .master h2{font:400 18px var(--disp);letter-spacing:.16em;text-transform:uppercase}
+  .master p{color:var(--dim);font-size:13px}
+  .master .designs{display:flex;gap:8px;flex-wrap:wrap}
+  .master .designs span{font:400 9px var(--wide);letter-spacing:.22em;text-transform:uppercase;border:1px solid var(--hair);padding:6px 10px;color:var(--dim)}
+  .master .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:auto}
+
+  /* proposals list */
+  .list-head{margin:70px 0 18px;display:flex;align-items:baseline;gap:20px}
+  .list-head h3{font:400 15px var(--disp);letter-spacing:.18em;text-transform:uppercase}
+  .list-head .count{font:400 10px var(--wide);letter-spacing:.26em;text-transform:uppercase;color:var(--dim)}
+  .list-head .rule{flex:1;height:1px;background:var(--hair)}
+  .plist{display:flex;flex-direction:column;border:1px solid var(--hair)}
+  .prow{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center;padding:18px 22px;border-bottom:1px solid var(--hair);background:var(--bg-2)}
+  .prow:last-child{border-bottom:none}
+  .prow:hover{background:#151213}
+  .prow .name{font:400 14px var(--body);color:var(--txt)}
+  .prow .sub{margin-top:4px;font:400 9.5px var(--wide);letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+  .prow .sub a{color:var(--copper-hi);text-decoration:none;text-transform:none;letter-spacing:.02em;font:400 11.5px var(--body)}
+  .prow .acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+  .prow .acts .btn{padding:9px 12px;font-size:8.5px}
+  .empty{padding:44px 22px;text-align:center;color:var(--dim);font-size:13px;background:var(--bg-2)}
+
+  /* login */
+  .login{max-width:380px;margin:12vh auto;padding:40px 34px;border:1px solid var(--line);background:var(--bg-2);display:flex;flex-direction:column;gap:18px}
+  .login h1{font-size:22px;letter-spacing:.22em}
+  .login input{background:#0b0a0a;border:1px solid var(--hair);color:var(--txt);font:400 14px var(--body);padding:12px}
+  .login input:focus{outline:none;border-color:var(--copper)}
+  .login .err{color:#f3c77a;font-size:12px;min-height:16px}
+
+  /* modal */
+  .modal{position:fixed;inset:0;z-index:9000;display:none;align-items:center;justify-content:center;background:rgba(4,4,4,.8);backdrop-filter:blur(8px);padding:20px}
+  .modal.open{display:flex}
+  .modal form{width:100%;max-width:440px;background:var(--bg-2);border:1px solid var(--line);padding:30px;display:flex;flex-direction:column;gap:16px}
+  .modal h4{font:400 14px var(--disp);letter-spacing:.16em;text-transform:uppercase}
+  .modal p{color:var(--dim);font-size:12.5px}
+  .modal input{background:#0b0a0a;border:1px solid var(--hair);color:var(--txt);font:400 14px var(--body);padding:12px}
+  .modal input:focus{outline:none;border-color:var(--copper)}
+  .modal .row{display:flex;gap:10px;justify-content:flex-end}
+
+  .toast{position:fixed;left:50%;bottom:30px;transform:translate(-50%,20px);opacity:0;pointer-events:none;z-index:9100;
+    background:#141112;border:1px solid var(--line);color:var(--txt);font:400 12.5px var(--body);padding:12px 18px;transition:.25s;max-width:90vw}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+  .toast.bad{border-color:#e2a33a;color:#f3c77a}
+  .topright{margin-left:auto}
+
+  @media (max-width:860px){
+    .dash{padding:40px 20px 100px}
+    .master{grid-template-columns:1fr}
+    .master .shot{min-height:220px}
+    .prow{grid-template-columns:1fr}
+    .prow .acts{justify-content:flex-start}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="logo-slot" id="logoAmato"><img alt="Amato Automotive" src="/assets/brand/amato.png"/></div>
+    <span class="brand-x">×</span>
+    <div class="logo-slot" id="logoMahindra"><img alt="Mahindra" src="/assets/brand/mahindra.png"/></div>
+  </div>
+  <button class="btn topright" id="logout" type="button" hidden>Log out</button>
+</header>
+
+<!-- login -->
+<form class="login" id="loginView" hidden>
+  <h1>Admin</h1>
+  <p class="lead" style="margin:0">Enter the admin password to manage proposals.</p>
+  <input id="pw" type="password" placeholder="Password" autocomplete="current-password" required/>
+  <div class="err" id="loginErr"></div>
+  <button class="btn primary" type="submit">Log in</button>
+</form>
+
+<!-- dashboard -->
+<div class="dash" id="dashView" hidden>
+  <h1>Proposals</h1>
+  <p class="lead">Start from the master template, make a copy, replace the images and text for your customer, save, and share the link. The master template itself never changes.</p>
+
+  <div class="master">
+    <div class="shot"><img id="masterShot" alt="Master template preview"/><span class="badge">Master template</span></div>
+    <div class="info">
+      <h2 id="masterTitle">XUV 7XO</h2>
+      <p>The original design proposal with all current images and text. It's read-only. Create a copy to edit it.</p>
+      <div class="designs" id="masterDesigns"></div>
+      <div class="row">
+        <button class="btn primary" id="newBtn" type="button">+ Create new from template</button>
+        <a class="btn" href="/" target="_blank" rel="noopener">View template ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="list-head"><h3>Your proposals</h3><span class="count" id="count"></span><span class="rule"></span></div>
+  <div class="plist" id="plist"><div class="empty">Loading…</div></div>
+</div>
+
+<!-- name dialog -->
+<div class="modal" id="nameModal">
+  <form id="nameForm">
+    <h4 id="nameHead">New proposal</h4>
+    <p id="nameHelp">Give it a name you'll recognise, for example the customer or dealer name. Only admins see this name.</p>
+    <input id="nameInput" maxlength="120" placeholder="e.g. Mahindra Pune — Nov 2026" required/>
+    <div class="row">
+      <button class="btn" type="button" id="nameCancel">Cancel</button>
+      <button class="btn primary" type="submit" id="nameOk">Create &amp; edit</button>
+    </div>
+  </form>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { api, AuthError, login, getToken, setToken, shareUrl, copyText } from "/js/admin-api.js";
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+const next = new URLSearchParams(location.search).get("next");
+
+let toastT;
+function toast(msg, bad = false){
+  const t = $("#toast"); t.textContent = msg; t.classList.toggle("bad", bad); t.classList.add("show");
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("show"), 3500);
+}
+
+function showLogin(msg = ""){
+  $("#dashView").hidden = true; $("#logout").hidden = true;
+  $("#loginView").hidden = false; $("#loginErr").textContent = msg; $("#pw").focus();
+}
+
+$("#loginView").addEventListener("submit", async e => {
+  e.preventDefault();
+  $("#loginErr").textContent = "";
+  try{
+    await login($("#pw").value);
+    if (next && next.startsWith("/admin/edit/")) return location.href = next;
+    showDash();
+  }catch(err){ $("#loginErr").textContent = err.message; }
+});
+$("#logout").onclick = () => { setToken(""); showLogin(); };
+
+/* ---------- master template preview ---------- */
+async function loadMaster(){
+  const m = await fetch("/default.json").then(r => r.json());
+  $("#masterTitle").textContent = `${m.vehicle} — Master template`;
+  $("#masterShot").src = m.designs[0]?.images?.angle1 || "";
+  $("#masterDesigns").innerHTML = m.designs.map((d, i) => `<span>Design ${String(i+1).padStart(2,"0")} · ${esc(d.name)}</span>`).join("");
+}
+
+/* ---------- list ---------- */
+const fmt = iso => iso ? new Date(iso).toLocaleString([], { day:"numeric", month:"short", year:"numeric", hour:"2-digit", minute:"2-digit" }) : "";
+
+async function loadList(){
+  const list = await api("/api/proposals");
+  $("#count").textContent = list.length ? `${list.length} total` : "";
+  $("#plist").innerHTML = list.length ? list.map(p => `
+    <div class="prow" data-id="${p.id}">
+      <div>
+        <div class="name">${esc(p.title)}</div>
+        <div class="sub">Updated ${fmt(p.updatedAt)} · <a href="/p/${p.id}" target="_blank" rel="noopener">${esc(shareUrl(p.id).replace(/^https?:\/\//, ""))}</a></div>
+      </div>
+      <div class="acts">
+        <a class="btn primary" href="/admin/edit/${p.id}">Edit</a>
+        <button class="btn" data-act="copy" type="button">Copy link</button>
+        <button class="btn" data-act="dup" type="button">Duplicate</button>
+        <button class="btn danger" data-act="del" type="button">Delete</button>
+      </div>
+    </div>`).join("")
+    : `<div class="empty">No proposals yet. Click <b>Create new from template</b> to make your first one.</div>`;
+}
+
+$("#plist").addEventListener("click", async e => {
+  const btn = e.target.closest("[data-act]"); if (!btn) return;
+  const row = btn.closest(".prow"), id = row.dataset.id, title = row.querySelector(".name").textContent;
+  try{
+    if (btn.dataset.act === "copy"){ await copyText(shareUrl(id)); toast("Link copied: " + shareUrl(id)); }
+    if (btn.dataset.act === "dup") askName({ head: "Duplicate proposal", help: `A full copy of “${title}”, with its own new link.`, value: `${title} (copy)`, from: id });
+    if (btn.dataset.act === "del"){
+      if (!confirm(`Delete “${title}”? Its share link will stop working. This can't be undone.`)) return;
+      btn.disabled = true;
+      await api(`/api/proposals/${id}`, { method: "DELETE" });
+      toast("Proposal deleted"); loadList();
+    }
+  }catch(err){ handle(err); }
+});
+
+/* ---------- create / duplicate ---------- */
+let pendingFrom = null;
+function askName({ head, help, value = "", from = null, ok = "Create & edit" }){
+  pendingFrom = from;
+  $("#nameHead").textContent = head; $("#nameHelp").textContent = help; $("#nameOk").textContent = ok;
+  $("#nameInput").value = value; $("#nameModal").classList.add("open");
+  setTimeout(() => $("#nameInput").select(), 30);
+}
+const closeName = () => $("#nameModal").classList.remove("open");
+$("#nameCancel").onclick = closeName;
+$("#nameModal").addEventListener("click", e => { if (e.target.id === "nameModal") closeName(); });
+$("#newBtn").onclick = () => askName({
+  head: "New proposal from template",
+  help: "This makes a copy of the master template. Give it a name you'll recognise, for example the customer or dealer name. Only admins see this name.",
+});
+$("#nameForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  $("#nameOk").disabled = true;
+  try{
+    const rec = await api("/api/proposals", { method: "POST", body: { title: $("#nameInput").value.trim(), from: pendingFrom || undefined } });
+    location.href = `/admin/edit/${rec.id}`;
+  }catch(err){ handle(err); $("#nameOk").disabled = false; }
+});
+
+function handle(err){
+  if (err instanceof AuthError){ setToken(""); showLogin("Session expired. Please log in again."); }
+  else toast(err.message, true);
+}
+
+async function showDash(){
+  $("#loginView").hidden = true; $("#dashView").hidden = false; $("#logout").hidden = false;
+  loadMaster().catch(() => {});
+  try{ await loadList(); }catch(err){ handle(err); }
+}
+
+(async () => {
+  if (!getToken()) return showLogin();
+  const s = await fetch("/api/session", { headers: { authorization: `Bearer ${getToken()}` } }).then(r => r.json()).catch(() => ({}));
+  s.ok ? (next && next.startsWith("/admin/edit/") ? location.href = next : showDash()) : showLogin();
+})();
+</script>
+</body>
+</html>

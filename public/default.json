@@ -1,0 +1,304 @@
+{
+  "schema": 1,
+  "vehicle": "XUV 7XO",
+  "brand": {
+    "logoLeft": "/assets/brand/amato.png",
+    "logoRight": "/assets/brand/mahindra.png"
+  },
+  "labels": {
+    "themeLabel": "Design Theme",
+    "vehicleLabel": "Vehicle",
+    "paletteLabel": "Color Palette",
+    "seatTag": "Front Seat"
+  },
+  "sections": {
+    "interior": {
+      "title": "The Complete Interior",
+      "sub": "Three angles · one design language"
+    },
+    "signature": {
+      "title": "The Signature — Seat Cover",
+      "sub": "Six crafted details"
+    },
+    "elements": {
+      "title": "Cabin Elements",
+      "sub": "Every touchpoint, independently crafted"
+    }
+  },
+  "angles": [
+    {
+      "name": "Front Cabin",
+      "sub": "Driver & co-driver row"
+    },
+    {
+      "name": "Rear Cabin",
+      "sub": "Second row, full bench"
+    },
+    {
+      "name": "Boot Mat / Liner",
+      "sub": "Boot mat & liner detail"
+    }
+  ],
+  "elementLabels": {
+    "door": "Door Panel",
+    "floor": "Floor Mats",
+    "dash": "Dashboard",
+    "steering": "Steering",
+    "boot": "Boot Mat / Liner",
+    "rear": "Rear Seat Design"
+  },
+  "designs": [
+    {
+      "name": "Luxury",
+      "theme": "Luxury",
+      "tm": false,
+      "desc": "A seat cover concept built around indulgence — rich materials, refined stitching and a first-class cabin presence for the XUV 7XO.",
+      "palette": [
+        {
+          "hex": "#614031",
+          "label": "Tan"
+        },
+        {
+          "hex": "#f4eee2",
+          "label": "Ivory"
+        }
+      ],
+      "callouts": [
+        {
+          "t": "Headrest",
+          "d": "A shimmering cascade-pattern inlay flows across the headrest, adding artisanal touch to soft cream leather.",
+          "pos": {
+            "x": 50,
+            "y": 15
+          },
+          "img": "/assets/xuv7xo/luxuryheadrest.webp"
+        },
+        {
+          "t": "Shoulder Design",
+          "d": "Geometrical emboss pattern lends a couture texture to the shoulder line, framed by a sleek metallic accent.",
+          "pos": {
+            "x": 43,
+            "y": 28
+          },
+          "img": "/assets/xuv7xo/luxuryshoulderdesign.webp"
+        },
+        {
+          "t": "Emboss",
+          "d": "Clean embossed centrelines run down a smooth leather canvas, offset by intricate herringbone-textured side bolsters.",
+          "pos": {
+            "x": 47,
+            "y": 55
+          },
+          "img": "/assets/xuv7xo/luxuryembiss.webp"
+        },
+        {
+          "t": "Trail Stitch",
+          "d": "Interwoven herringbone trail stitching flows seamlessly from shoulder to seatback, edged in warm piping for a couture, tailored finish.",
+          "pos": {
+            "x": 67,
+            "y": 34
+          },
+          "img": "/assets/xuv7xo/luxurytrailstich.webp"
+        },
+        {
+          "t": "Ribbed Lumbar",
+          "d": "Sculpted ribbed lumbar channels rise centre-stage, cradled by herringbone-woven bolsters for a striking balance of structure and texture.",
+          "pos": {
+            "x": 60,
+            "y": 51
+          },
+          "img": "/assets/xuv7xo/luxurylumber.webp"
+        },
+        {
+          "t": "Side Bolsters",
+          "d": "Herringbone-textured side bolsters wrapped in smooth contrast piping, sculpting a bold, tailored profile from every angle.",
+          "pos": {
+            "x": 65,
+            "y": 58
+          },
+          "img": "/assets/xuv7xo/luxurybolsters.webp"
+        }
+      ],
+      "images": {
+        "angle1": "/assets/xuv7xo/TechFront-d1.webp",
+        "angle2": "/assets/xuv7xo/xuv7xo-design1-rear-v3.webp",
+        "angle3": "/assets/xuv7xo/FullInteriorD1.webp",
+        "seat": "/assets/xuv7xo/D1.webp",
+        "door": "/assets/xuv7xo/xuv7xo-design1-door-v2.webp",
+        "floor": "/assets/xuv7xo/xuv7xo-design1-floor-v2.webp",
+        "dash": "/assets/xuv7xo/DashboardD1-v2.webp",
+        "steering": "/assets/xuv7xo/xuv7xo-design1-steering-v2.webp",
+        "boot": "/assets/xuv7xo/FullInteriorD1.webp",
+        "rear": "/assets/xuv7xo/xuv7xo-design1-rear-v3.webp"
+      }
+    },
+    {
+      "name": "Minimal",
+      "theme": "Minimal",
+      "tm": false,
+      "desc": "A seat cover concept built on restraint — clean lines, quiet tones and nothing excess. Understated premium for the XUV 7XO.",
+      "palette": [
+        {
+          "hex": "#614031",
+          "label": "Tan"
+        },
+        {
+          "hex": "#f4eee2",
+          "label": "Ivory"
+        }
+      ],
+      "callouts": [
+        {
+          "t": "Headrest",
+          "d": "A clean, minimalist headrest finished with a subtle embossed emblem — quiet confidence in every detail.",
+          "pos": {
+            "x": 50,
+            "y": 15
+          },
+          "img": "/assets/xuv7xo/minimalheadrest.webp"
+        },
+        {
+          "t": "Shoulder Design",
+          "d": "Contrast leather meets a brushed metallic crown & contrast that commands attention.",
+          "pos": {
+            "x": 43,
+            "y": 28
+          },
+          "img": "/assets/xuv7xo/minimalshoulder.webp"
+        },
+        {
+          "t": "Perforation & Stitching",
+          "d": "Angular perforated linework layered with fine dash stitching, creating a bold geometric rhythm across the surface.",
+          "pos": {
+            "x": 47,
+            "y": 55
+          },
+          "img": "/assets/xuv7xo/minimalperforationstitch.webp"
+        },
+        {
+          "t": "Trail Stitch",
+          "d": "Dual-tone leather framed by cascading trail stitches — a graphic signature of tailored craftsmanship.",
+          "pos": {
+            "x": 67,
+            "y": 34
+          },
+          "img": "/assets/xuv7xo/minimaltrailstich.webp"
+        },
+        {
+          "t": "Ribbed Lumbar",
+          "d": "Complete seat architecture unites embossed headrest, contrast bolsters, and cascading trail-stitch lumbar into one tailored silhouette.",
+          "pos": {
+            "x": 60,
+            "y": 51
+          },
+          "img": "/assets/xuv7xo/minimallumber.webp"
+        },
+        {
+          "t": "Side Bolsters",
+          "d": "Clean-lined side bolsters in soft two-tone leather, finished with fine stitch edging for a tailored, supportive profile.",
+          "pos": {
+            "x": 65,
+            "y": 58
+          },
+          "img": "/assets/xuv7xo/minimalbolster.webp"
+        }
+      ],
+      "images": {
+        "angle1": "/assets/xuv7xo/minimlistic.webp",
+        "angle2": "/assets/xuv7xo/RearD2.webp",
+        "angle3": "/assets/xuv7xo/bootmatD2.webp",
+        "seat": "/assets/xuv7xo/D2.webp",
+        "door": "/assets/xuv7xo/DoorD2-v2.webp",
+        "floor": "/assets/xuv7xo/floormatD2.webp",
+        "dash": "/assets/xuv7xo/DashboardD2-v2.webp",
+        "steering": "/assets/xuv7xo/steeringD2.webp",
+        "boot": "/assets/xuv7xo/bootmatD2.webp",
+        "rear": "/assets/xuv7xo/RearD2.webp"
+      }
+    },
+    {
+      "name": "Tech",
+      "theme": "Tech",
+      "tm": false,
+      "desc": "A seat cover concept engineered like an interface — precise geometry, sharp detailing and a modern cockpit feel for the XUV 7XO.",
+      "palette": [
+        {
+          "hex": "#2e5060",
+          "label": "Deep Teal"
+        },
+        {
+          "hex": "#12161a",
+          "label": "Charcoal Black"
+        }
+      ],
+      "callouts": [
+        {
+          "t": "Headrest",
+          "d": "Deep-blue headrest with a subtle brushed texture, adding depth and dimension to a sleek, understated silhouette.",
+          "pos": {
+            "x": 50,
+            "y": 15
+          },
+          "img": "/assets/xuv7xo/techheadrest.webp"
+        },
+        {
+          "t": "Shoulder Design",
+          "d": "Perforated shoulder panel in deep charcoal-blue, framing the neckline with a clean, breathable finish.",
+          "pos": {
+            "x": 43,
+            "y": 28
+          },
+          "img": "/assets/xuv7xo/techshoulder.webp"
+        },
+        {
+          "t": "Perforation & Emboss",
+          "d": "Circuit-inspired embossed linework threads across a deep-blue canvas, blending tech-forward geometry with tactile depth.",
+          "pos": {
+            "x": 47,
+            "y": 55
+          },
+          "img": "/assets/xuv7xo/techperforationemboss.webp"
+        },
+        {
+          "t": "Trail Stitch",
+          "d": "Fine perforated trail stitching runs along the shoulder edge, adding crisp definition to the deep-blue textured finish.",
+          "pos": {
+            "x": 72,
+            "y": 35
+          },
+          "img": "/assets/xuv7xo/techtrailstitch.webp"
+        },
+        {
+          "t": "Ribbed Lumbar",
+          "d": "Circuit-etched lumbar panel channels a tech-inspired pathway down the seatback, framed by deep-blue perforated shoulders.",
+          "pos": {
+            "x": 60,
+            "y": 51
+          },
+          "img": "/assets/xuv7xo/techlumber.webp"
+        },
+        {
+          "t": "Side Bolsters",
+          "d": "Smooth, deep-blue side bolsters with fine pin-dot stitching, sculpted for a sleek, supportive profile.",
+          "pos": {
+            "x": 70,
+            "y": 58
+          },
+          "img": "/assets/xuv7xo/techbolster.webp"
+        }
+      ],
+      "images": {
+        "angle1": "/assets/xuv7xo/TechFront-d3.webp",
+        "angle2": "/assets/xuv7xo/RearSeatD3-v2.webp",
+        "angle3": "/assets/xuv7xo/BootmatD3-v2.webp",
+        "seat": "/assets/xuv7xo/Picture2.webp",
+        "door": "/assets/xuv7xo/DoorD3-v2.webp",
+        "floor": "/assets/xuv7xo/floormatD3-v3.webp",
+        "dash": "/assets/xuv7xo/DashboardD3-v2.webp",
+        "steering": "/assets/xuv7xo/SteeringD3-v2.webp",
+        "boot": "/assets/xuv7xo/BootmatD3-v2.webp",
+        "rear": "/assets/xuv7xo/RearSeatD3-v2.webp"
+      }
+    }
+  ]
+}

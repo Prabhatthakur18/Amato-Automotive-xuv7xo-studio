@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>XUV 7XO — Amato Automotive × Mahindra</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Michroma&amp;family=Archivo:wght@200;300;400;500&amp;family=Inter:wght@300;400;500&amp;display=swap" rel="stylesheet"/>
+<link href="/css/site.css" rel="stylesheet"/>
+<style>
+  /* shown only while the proposal loads or if it can't be found */
+  .page-state{min-height:60vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;text-align:center}
+  .page-state b{font:400 14px var(--disp);letter-spacing:.2em;text-transform:uppercase}
+  .page-state span{font:400 10px var(--wide);letter-spacing:.26em;text-transform:uppercase;color:var(--dim)}
+</style>
+</head>
+<body>
+<header>
+<div class="brand">
+<div class="logo-slot" id="logoAmato"><img alt="Amato Automotive" src="/assets/brand/amato.png"/></div>
+<span class="brand-x">×</span>
+<div class="logo-slot" id="logoMahindra"><img alt="Mahindra" src="/assets/brand/mahindra.png"/></div>
+</div>
+</header>
+<main class="wrap" id="main"><div class="page-state"><span>Loading…</span></div></main>
+<footer>
+<div class="footer-logo amato"><img alt="Amato Automotive" src="/assets/brand/amato.png"/></div>
+<div class="footer-logo mahindra"><img alt="Mahindra" src="/assets/brand/mahindra.png"/></div>
+</footer>
+<div aria-hidden="true" aria-label="Expanded image viewer" aria-modal="true" class="zoom-modal" id="zoomModal" role="dialog">
+<button aria-label="Close expanded image" class="zoom-close" id="zoomClose" type="button">×</button>
+<img alt="" id="zoomImage"/>
+<div class="zoom-caption" id="zoomCaption"></div>
+</div>
+<script type="module" src="/js/app.js"></script>
+</body>
+</html>

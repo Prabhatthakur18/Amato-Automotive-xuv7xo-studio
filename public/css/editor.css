@@ -1,0 +1,73 @@
+/* Admin editor overlay — only loaded on /admin/edit/:id */
+body.editing{padding-bottom:96px}
+body.editing .rv{opacity:1;transform:none}
+
+/* editable text */
+body.editing [data-edit]{outline:1px dashed transparent;outline-offset:3px;border-radius:2px;cursor:text;transition:outline-color .15s, background .15s;min-width:1ch;display:inline-block}
+body.editing .callout .ct[data-edit], body.editing .callout .cd [data-edit]{display:inline}
+body.editing [data-edit]:hover{outline-color:rgba(214,58,74,.55)}
+body.editing [data-edit]:focus{outline:1px solid var(--copper-hi);background:rgba(176,30,46,.10)}
+body.editing [data-edit]:empty::before{content:"(empty)";opacity:.4}
+body.editing .angle-hud{pointer-events:auto}
+
+/* image tools */
+.ed-img{position:absolute;top:10px;left:10px;z-index:9;display:flex;gap:6px;opacity:0;transition:opacity .2s}
+.slot:hover > .ed-img, .slot:focus-within > .ed-img{opacity:1}
+.slot:not(.has-img) > .ed-img{opacity:1}
+.ed-img-btn{font:500 9px var(--wide);letter-spacing:.18em;text-transform:uppercase;color:#fff;cursor:pointer;
+  background:rgba(176,30,46,.92);border:1px solid rgba(255,255,255,.25);padding:7px 11px;border-radius:2px}
+.ed-img-btn:hover{background:var(--copper-hi)}
+.ed-img-btn.x{padding:7px 9px;background:rgba(8,8,8,.75)}
+.ed-img-btn.x:hover{background:#000}
+.slot:not(.has-img) > .ed-img .x{display:none}
+.callout .cthumb .ed-img{top:6px;left:6px}
+.callout .cthumb .ed-img-btn{padding:4px 7px;font-size:7.5px;letter-spacing:.12em}
+.callout .cthumb .ph i{display:none}
+
+/* logos */
+.ed-logo{cursor:pointer;outline:1px dashed transparent;outline-offset:4px}
+.ed-logo:hover{outline-color:rgba(214,58,74,.7)}
+
+/* draggable markers */
+.marker.ed-drag{cursor:grab;touch-action:none}
+.marker.ed-drag:active{cursor:grabbing}
+.marker.ed-drag .core{outline:1px dashed rgba(255,255,255,.5);outline-offset:6px}
+
+/* palette */
+.swatches{align-items:flex-start;flex-wrap:wrap}
+.swatch{position:relative}
+.ed-chip{position:relative;cursor:pointer}
+.ed-chip:hover{outline:1px solid var(--copper-hi)}
+.ed-color{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:0;padding:0}
+.ed-sw-x{position:absolute;top:-8px;right:-8px;width:18px;height:18px;border-radius:50%;border:1px solid var(--hair);
+  background:#1a1617;color:var(--dim);font:400 12px/1 var(--body);cursor:pointer;display:none}
+.swatch:hover .ed-sw-x{display:block}
+.ed-sw-x:hover{color:#fff;background:var(--copper)}
+.ed-sw-add{width:40px;height:40px;border:1px dashed var(--line);background:transparent;color:var(--copper);font:300 20px var(--body);cursor:pointer}
+.ed-sw-add:hover{border-color:var(--copper-hi);color:var(--copper-hi)}
+
+/* bottom toolbar */
+.ed-bar{position:fixed;left:16px;right:16px;bottom:16px;z-index:9000;display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+  padding:12px 16px;background:rgba(14,12,13,.94);backdrop-filter:blur(14px);border:1px solid var(--line);
+  box-shadow:0 18px 60px rgba(0,0,0,.6)}
+.ed-title{display:flex;flex-direction:column;gap:3px;flex:1;min-width:200px;max-width:420px}
+.ed-title span{font:400 8px var(--wide);letter-spacing:.26em;text-transform:uppercase;color:var(--dim)}
+.ed-title input{background:#0b0a0a;border:1px solid var(--hair);color:var(--txt);font:400 13px var(--body);padding:7px 10px}
+.ed-title input:focus{outline:none;border-color:var(--copper)}
+.ed-status{font:400 9px var(--wide);letter-spacing:.2em;text-transform:uppercase;color:var(--dim)}
+.ed-status.warn{color:#e2a33a}
+.ed-status.ok{color:#6fbf8a}
+.ed-actions{display:flex;gap:8px;margin-left:auto;flex-wrap:wrap}
+.ed-btn{font:500 9.5px var(--wide);letter-spacing:.22em;text-transform:uppercase;padding:11px 16px;cursor:pointer;
+  border:1px solid var(--line);background:transparent;color:var(--txt);text-decoration:none;white-space:nowrap}
+.ed-btn:hover{border-color:var(--copper-hi);color:#fff}
+.ed-btn.primary{background:var(--copper);border-color:var(--copper);color:#fff}
+.ed-btn.primary:hover{background:var(--copper-hi)}
+.ed-hint{flex-basis:100%;font:300 10.5px var(--body);color:var(--dim);letter-spacing:.02em}
+@media (max-width:760px){.ed-hint{display:none}.ed-bar{left:8px;right:8px;bottom:8px;gap:10px}}
+
+.ed-toast{position:fixed;left:50%;bottom:120px;transform:translate(-50%,20px);z-index:9100;opacity:0;pointer-events:none;
+  background:#141112;border:1px solid var(--line);color:var(--txt);font:400 12px var(--body);padding:11px 18px;
+  transition:opacity .25s, transform .25s;max-width:90vw}
+.ed-toast.show{opacity:1;transform:translate(-50%,0)}
+.ed-toast.bad{border-color:#e2a33a;color:#f3c77a}
