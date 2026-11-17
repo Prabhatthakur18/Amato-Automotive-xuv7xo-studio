@@ -50,6 +50,7 @@ function buildToolbar(){
     <div class="ed-actions">
       <button class="ed-btn ghost" id="edOpen" type="button" title="Open the customer view in a new tab">Open link ↗</button>
       <button class="ed-btn ghost" id="edCopy" type="button">Copy share link</button>
+      <button class="ed-btn ghost" id="edHtml" type="button" title="Offline file: opens without internet, can be linked from PowerPoint">Download HTML</button>
       <button class="ed-btn primary" id="edSave" type="button">Save</button>
     </div>
     <div class="ed-hint">Click text to edit · hover images to replace · drag seat markers · click colour chips · use + / × / arrows to add, delete and reorder designs, sections, views, details and cards</div>`;
@@ -62,6 +63,17 @@ function buildToolbar(){
     if (dirty && !(await save())) return;
     await copyText(shareUrl(rec.id));
     toast("Share link copied — " + shareUrl(rec.id));
+  };
+  $("#edHtml").onclick = async () => {
+    if (dirty && !(await save())) return;
+    const btn = $("#edHtml"), label = btn.textContent;
+    btn.disabled = true;
+    try{
+      const { downloadOffline } = await import("./export.js");
+      const size = await downloadOffline(page.data, rec.title, (d, t) => { btn.textContent = `Preparing ${d}/${t}…`; });
+      toast(`Downloaded “${rec.title}.html” (${(size / 1048576).toFixed(1)} MB) — opens offline`);
+    }catch(e){ toast("Download failed: " + e.message, true); }
+    finally{ btn.disabled = false; btn.textContent = label; }
   };
   $("#edOpen").onclick = async () => {
     if (dirty && !(await save())) return;

@@ -33,6 +33,16 @@ older proposals are upgraded automatically when opened).
 The master template is never modified. Every proposal is a separate copy with its own link.
 Uploaded images are resized and converted to WebP in the browser before upload.
 
+## Download HTML (offline file)
+
+**Download HTML** (dashboard row, master template card, editor toolbar) builds one
+self-contained `.html` file in the browser — styles, page script and every image embedded.
+It opens by double-click with no internet, so it can be linked from a PowerPoint slide
+(Ctrl+K → the file) or emailed. Without internet the text uses fallback fonts.
+
+The file embeds `public/js/offline-runtime.js`, a bundled copy of `page.js` + `model.js`.
+**After editing those, rebuild it:** `npm run build:offline` and commit the result.
+
 ## Netlify setup (one time)
 
 1. **Link the repo:** Site configuration → Build & deploy → Link repository → choose this repo.
@@ -64,6 +74,8 @@ public/index.html        page shell (viewer + editor)
 public/js/page.js        render engine: same markup as the original, driven by JSON
 public/js/model.js       content model, limits, defaults, schema-1 → 2 migration
 public/js/editor.js      in-place editor
+public/js/export.js      Download HTML (offline file) builder
+public/js/offline-runtime.js  bundled page engine for offline files (npm run build:offline)
 public/js/admin-api.js   auth, API, image compression
 public/admin/index.html  dashboard
 public/css/site.css      original styles (unchanged)

@@ -116,6 +116,7 @@
       <div class="row">
         <button class="btn primary" id="newBtn" type="button">+ Create new from template</button>
         <a class="btn" href="/" target="_blank" rel="noopener">View template ↗</a>
+        <button class="btn" id="masterHtml" type="button" title="Offline file: opens without internet, can be linked from PowerPoint">Download HTML</button>
       </div>
     </div>
   </div>
@@ -141,6 +142,7 @@
 
 <script type="module">
 import { api, AuthError, login, getToken, setToken, shareUrl, copyText } from "/js/admin-api.js";
+import { downloadOffline } from "/js/export.js";
 
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
@@ -193,6 +195,7 @@ async function loadList(){
       <div class="acts">
         <a class="btn primary" href="/admin/edit/${p.id}">Edit</a>
         <button class="btn" data-act="copy" type="button">Copy link</button>
+        <button class="btn" data-act="html" type="button" title="Offline file: opens without internet, can be linked from PowerPoint">Download HTML</button>
         <button class="btn" data-act="dup" type="button">Duplicate</button>
         <button class="btn danger" data-act="del" type="button">Delete</button>
       </div>
@@ -204,6 +207,10 @@ $("#plist").addEventListener("click", async e => {
   const btn = e.target.closest("[data-act]"); if (!btn) return;
   const row = btn.closest(".prow"), id = row.dataset.id, title = row.querySelector(".name").textContent;
   try{
+    if (btn.dataset.act === "html"){
+      const rec = await api(`/api/proposals/${id}`);
+      await exportHtml(btn, rec.content, rec.title);
+    }
     if (btn.dataset.act === "copy"){ await copyText(shareUrl(id)); toast("Link copied: " + shareUrl(id)); }
     if (btn.dataset.act === "dup") askName({ head: "Duplicate proposal", help: `A full copy of “${title}”, with its own new link.`, value: `${title} (copy)`, from: id });
     if (btn.dataset.act === "del"){
@@ -214,6 +221,24 @@ $("#plist").addEventListener("click", async e => {
     }
   }catch(err){ handle(err); }
 });
+
+/* ---------- offline HTML download ---------- */
+async function exportHtml(btn, content, title){
+  const label = btn.textContent;
+  btn.disabled = true;
+  try{
+    const size = await downloadOffline(content, title, (d, t) => { btn.textContent = `Preparing ${d}/${t}…`; });
+    toast(`Downloaded “${title}.html” (${(size / 1048576).toFixed(1)} MB) — opens offline`);
+  }catch(err){ toast("Download failed: " + err.message, true); }
+  finally{ btn.disabled = false; btn.textContent = label; }
+}
+$("#masterHtml").onclick = async () => {
+  const btn = $("#masterHtml");
+  try{
+    const m = await fetch("/default.json").then(r => r.json());
+    await exportHtml(btn, m, `${m.vehicle} — Master template`);
+  }catch(err){ toast("Download failed: " + err.message, true); }
+};
 
 /* ---------- create / duplicate ---------- */
 let pendingFrom = null;
