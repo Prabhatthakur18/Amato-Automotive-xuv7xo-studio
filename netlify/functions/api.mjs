@@ -7,7 +7,7 @@
    Admin (Authorization: Bearer <token>)
      POST   /api/login                  { password } -> { token }
      GET    /api/proposals              list
-     POST   /api/proposals              { title, from? }  create (copy of `from` or master)
+     POST   /api/proposals              { title, from?, content? }  create (copy of `from`, imported content, or master)
      PUT    /api/proposals/:id          { title?, content? }
      DELETE /api/proposals/:id
      POST   /api/upload                 raw image body -> { url }
@@ -133,7 +133,10 @@ export default async (req) => {
       if (!id && method === "POST"){
         const body = await req.json().catch(() => ({}));
         let content = structuredClone(master), from = null;
-        if (body.from){
+        if (body.content !== undefined){                       // import (e.g. from a downloaded HTML file)
+          if (!validContent(body.content)) return fail(400, "Imported content is not a valid proposal");
+          content = body.content;
+        } else if (body.from){
           from = await proposals().get(body.from, { type: "json" });
           if (!from) return fail(404, "Source proposal not found");
           content = structuredClone(from.content);

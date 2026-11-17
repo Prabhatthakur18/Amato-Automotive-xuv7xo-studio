@@ -34,7 +34,7 @@ function imageRefs(o, out = []){
   if (Array.isArray(o)) o.forEach(x => imageRefs(x, out));
   else if (o && typeof o === "object"){
     for (const [k, v] of Object.entries(o)){
-      if (typeof v === "string" && IMAGE_KEYS.test(k)) { if (v && !v.startsWith("data:")) out.push([o, k]); }
+      if (typeof v === "string" && IMAGE_KEYS.test(k)) { if (v) out.push([o, k]); }
       else imageRefs(v, out);
     }
   }
@@ -49,7 +49,7 @@ function imageRefs(o, out = []){
 export async function buildOfflineHtml(content, onProgress = () => {}){
   const data = normalize(JSON.parse(JSON.stringify(content)));
 
-  const refs = imageRefs(data);
+  const refs = imageRefs(data).filter(([o, k]) => !o[k].startsWith("data:"));
   const unique = [...new Set(refs.map(([o, k]) => o[k]))];
   const map = new Map();
   let done = 0;
@@ -85,4 +85,35 @@ export async function downloadOffline(content, title, onProgress){
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 10000);
   return blob.size;
+}
+
+/* ------------------------------ import ------------------------------ */
+/* Read the proposal content back out of a file made by "Download HTML". */
+export function readOfflineHtml(html){
+  const m = html.match(/<script>window\.__DATA__=([\s\S]*?);<\/script>/);
+  if (!m) throw new Error("This isn't a proposal file downloaded from this site");
+  return normalize(JSON.parse(m[1].replace(/<\\\/(script)/gi, "</$1")));
+}
+
+/**
+ * Turn embedded images (data: URIs) back into uploaded images so the
+ * proposal stays small enough to save. uploadImage(file) → url.
+ */
+export async function uploadEmbeddedImages(content, uploadImage, onProgress = () => {}){
+  const refs = imageRefs(content).filter(([o, k]) => o[k].startsWith("data:"));
+  const unique = [...new Set(refs.map(([o, k]) => o[k]))];
+  const map = new Map();
+  let done = 0;
+  onProgress(0, unique.length);
+  const queue = [...unique];
+  await Promise.all(Array.from({ length: 4 }, async () => {
+    while (queue.length){
+      const uri = queue.shift();
+      const blob = await (await fetch(uri)).blob();
+      map.set(uri, await uploadImage(new File([blob], "image", { type: blob.type })));
+      onProgress(++done, unique.length);
+    }
+  }));
+  refs.forEach(([o, k]) => { o[k] = map.get(o[k]); });
+  return content;
 }

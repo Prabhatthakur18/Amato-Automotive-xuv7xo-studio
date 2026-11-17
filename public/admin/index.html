@@ -121,7 +121,9 @@
     </div>
   </div>
 
-  <div class="list-head"><h3>Your proposals</h3><span class="count" id="count"></span><span class="rule"></span></div>
+  <div class="list-head"><h3>Your proposals</h3><span class="count" id="count"></span><span class="rule"></span>
+    <button class="btn" id="importBtn" type="button" title="Add a proposal from a file made with Download HTML">Import HTML</button>
+    <input id="importFile" type="file" accept=".html,.htm,text/html" hidden/></div>
   <div class="plist" id="plist"><div class="empty">Loading…</div></div>
 </div>
 
@@ -141,8 +143,8 @@
 <div class="toast" id="toast"></div>
 
 <script type="module">
-import { api, AuthError, login, getToken, setToken, shareUrl, copyText } from "/js/admin-api.js";
-import { downloadOffline } from "/js/export.js";
+import { api, AuthError, login, getToken, setToken, shareUrl, copyText, uploadImage } from "/js/admin-api.js";
+import { downloadOffline, readOfflineHtml, uploadEmbeddedImages } from "/js/export.js";
 
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
@@ -262,6 +264,25 @@ $("#nameForm").addEventListener("submit", async e => {
     const rec = await api("/api/proposals", { method: "POST", body: { title: $("#nameInput").value.trim(), from: pendingFrom || undefined } });
     location.href = `/admin/edit/${rec.id}`;
   }catch(err){ handle(err); $("#nameOk").disabled = false; }
+});
+
+/* ---------- import a downloaded HTML file as a new proposal ---------- */
+$("#importBtn").onclick = () => $("#importFile").click();
+$("#importFile").addEventListener("change", async e => {
+  const file = e.target.files[0]; e.target.value = "";
+  if (!file) return;
+  const btn = $("#importBtn"), label = btn.textContent;
+  btn.disabled = true;
+  try{
+    btn.textContent = "Reading file…";
+    const content = readOfflineHtml(await file.text());
+    await uploadEmbeddedImages(content, uploadImage, (d, t) => { btn.textContent = `Uploading images ${d}/${t}…`; });
+    btn.textContent = "Saving…";
+    const title = file.name.replace(/\.html?$/i, "").replace(/[_]+/g, " ").trim() || "Imported proposal";
+    const rec = await api("/api/proposals", { method: "POST", body: { title, content } });
+    toast(`Imported “${rec.title}” — opening editor`);
+    location.href = `/admin/edit/${rec.id}`;
+  }catch(err){ handle(err); btn.disabled = false; btn.textContent = label; }
 });
 
 function handle(err){
