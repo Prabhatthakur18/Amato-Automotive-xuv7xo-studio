@@ -29,6 +29,11 @@
     X-Robots-Tag = "noindex, nofollow"
 
 [[headers]]
+  for = "/share/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
   for = "/assets/*"
   [headers.values]
     Cache-Control = "public, max-age=604800"
