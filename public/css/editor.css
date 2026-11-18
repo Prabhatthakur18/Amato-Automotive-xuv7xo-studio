@@ -103,3 +103,14 @@ section + .ed-add-sec{margin-top:-30px}
 .ed-add-card{display:flex;align-items:center;justify-content:center;min-height:220px;cursor:pointer;
   border:1px dashed var(--line);background:transparent;color:var(--dim);font:400 10px var(--wide);letter-spacing:.24em;text-transform:uppercase}
 .ed-add-card:hover{border-color:var(--copper-hi);color:var(--txt)}
+
+/* section 1: editable view names on the tabs */
+body.editing .angle-thumb{cursor:pointer;user-select:none}
+body.editing .angle-thumb .tname [data-edit]{cursor:text;user-select:text;padding:2px 3px;margin:-2px -3px}
+
+/* undo / redo */
+.ed-history{display:flex;gap:6px}
+.ed-icon{display:inline-flex;align-items:center;gap:8px;padding:9px 12px}
+.ed-icon svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ed-btn[disabled]{opacity:.35;cursor:default;pointer-events:none}
+@media (max-width:760px){.ed-icon span{display:none}}

@@ -203,8 +203,12 @@ export class ProposalPage {
         <div class="angle-count" data-hud="count"><b>${pad(ai + 1)}</b> / ${pad(n)}</div>
       </div>
       <div class="angle-thumbs" style="--n:${n}">
-        ${items.map((a, i) => `
-          <button class="angle-thumb ${i === ai ? "on" : ""}" data-i="${i}">
+        ${items.map((a, i) => this.editable
+          /* editor: a div (text inside a <button> can't be edited); the name itself is editable */
+          ? `<div class="angle-thumb ${i === ai ? "on" : ""}" data-i="${i}" role="button" tabindex="0">
+            <div class="tmeta"><span class="tnum">${pad(i + 1)}</span><span class="tname">${this.t(`${bp}.items.${i}.name`)}</span></div>
+          </div>`
+          : `<button class="angle-thumb ${i === ai ? "on" : ""}" data-i="${i}">
             <div class="tmeta"><span class="tnum">${pad(i + 1)}</span><span class="tname">${this.m(`${bp}.items.${i}.name`)}</span></div>
           </button>`).join("")}
       </div>

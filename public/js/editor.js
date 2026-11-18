@@ -28,6 +28,7 @@ export async function startEditor(id){
   buildToolbar();
   page = new ProposalPage(rec.content, { editable: true, onRendered: decorate });
   page.render();
+  savedState = contentState();
   bindGlobalKeys();
 }
 
@@ -47,18 +48,30 @@ function buildToolbar(){
     <label class="ed-title"><span>Proposal name</span>
       <input id="edTitle" maxlength="120" value=""/></label>
     <span class="ed-status" id="edStatus">All changes saved</span>
+    <div class="ed-history">
+      <button class="ed-btn ghost ed-icon" id="edUndo" type="button" title="Undo (Ctrl+Z)" aria-label="Undo" disabled>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg><span>Undo</span></button>
+      <button class="ed-btn ghost ed-icon" id="edRedo" type="button" title="Redo (Ctrl+Shift+Z)" aria-label="Redo" disabled>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg><span>Redo</span></button>
+    </div>
     <div class="ed-actions">
       <button class="ed-btn ghost" id="edOpen" type="button" title="Open the customer view in a new tab">Open link ↗</button>
       <button class="ed-btn ghost" id="edCopy" type="button">Copy share link</button>
       <button class="ed-btn ghost" id="edHtml" type="button" title="Offline file: opens without internet, can be linked from PowerPoint">Download HTML</button>
       <button class="ed-btn primary" id="edSave" type="button">Save</button>
     </div>
-    <div class="ed-hint">Click text to edit · hover images to replace · drag seat markers · click colour chips · use + / × / arrows to add, delete and reorder designs, sections, views, details and cards</div>`;
+    <div class="ed-hint">Click text to edit · hover images to replace · drag seat markers · click colour chips · use + / × / arrows to add, delete and reorder · Ctrl+Z undo · Ctrl+Shift+Z redo</div>`;
   document.body.appendChild(bar);
   const title = $("#edTitle");
   title.value = rec.title;
-  title.addEventListener("input", () => { rec.title = title.value; markDirty(); });
+  title.addEventListener("focus", () => { title._rec = false; });
+  title.addEventListener("input", () => {
+    if (!title._rec){ title._rec = true; record(); }
+    rec.title = title.value; markDirty();
+  });
   $("#edSave").onclick = save;
+  $("#edUndo").onclick = undo;
+  $("#edRedo").onclick = redo;
   $("#edCopy").onclick = async () => {
     if (dirty && !(await save())) return;
     await copyText(shareUrl(rec.id));
@@ -97,6 +110,7 @@ async function save(){
       method: "PUT", body: { title: rec.title, content: page.data },
     })), content: page.data };
     dirty = false;
+    savedState = contentState();
     s.textContent = "Saved " + new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
     s.className = "ed-status ok";
     return true;
@@ -110,7 +124,10 @@ async function save(){
 
 function bindGlobalKeys(){
   document.addEventListener("keydown", e => {
-    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s"){ e.preventDefault(); save(); }
+    const k = e.key.toLowerCase(), mod = e.ctrlKey || e.metaKey;
+    if (mod && k === "s"){ e.preventDefault(); save(); }
+    if (mod && k === "z" && !e.shiftKey){ e.preventDefault(); undo(); }
+    if (mod && ((k === "z" && e.shiftKey) || k === "y")){ e.preventDefault(); redo(); }
   });
   window.addEventListener("beforeunload", e => { if (dirty){ e.preventDefault(); e.returnValue = ""; } });
 }
@@ -154,7 +171,9 @@ function bindText(root){
       const text = (e.clipboardData || window.clipboardData).getData("text/plain").replace(/\s*\n\s*/g, " ");
       document.execCommand("insertText", false, text);
     });
+    el.addEventListener("focus", () => { el._rec = false; });
     el.addEventListener("input", () => {
+      if (!el._rec){ el._rec = true; recordTextStart(el); }
       const path = el.dataset.edit, val = el.textContent;
       setPath(page.data, path, val);
       document.querySelectorAll(`[data-sync="${path}"]`).forEach(m => { m.textContent = val; });
@@ -193,6 +212,7 @@ async function replaceImage(path, onDone){
   toast("Uploading image…");
   try{
     const url = await uploadImage(file);
+    record();
     setPath(page.data, path, url);
     onDone(url);
     markDirty();
@@ -223,6 +243,7 @@ function bindImages(root){
       }
       if (act === "remove"){
         if (!confirmRemove()) return;
+        record();
         setPath(page.data, path, "");
         document.querySelectorAll(`[data-img-path="${path}"]`).forEach(s => { s.dataset.src = ""; page.loadSlot(s); updatePh(s); });
         markDirty();
@@ -264,7 +285,9 @@ function bindMarkers(){
       e.preventDefault();
       mk.setPointerCapture(e.pointerId);
       const i = +mk.dataset.i;
+      let moved = false;
       const move = ev => {
+        if (!moved){ moved = true; record(); }
         const r = stage.getBoundingClientRect();
         const x = Math.min(98, Math.max(2, (ev.clientX - r.left) / r.width * 100));
         const y = Math.min(98, Math.max(2, (ev.clientY - r.top) / r.height * 100));
@@ -277,7 +300,7 @@ function bindMarkers(){
         mk.removeEventListener("pointermove", move);
         mk.removeEventListener("pointerup", up);
         mk.removeEventListener("pointercancel", up);
-        markDirty();
+        if (moved) markDirty();
       };
       mk.addEventListener("pointermove", move);
       mk.addEventListener("pointerup", up);
@@ -301,20 +324,22 @@ function bindSwatches(){
     chip.title = "Click to change colour";
     const input = Object.assign(document.createElement("input"), { type: "color", className: "ed-color", value: toHex(pal()[i].hex) });
     chip.appendChild(input);
+    input.addEventListener("click", () => { input._rec = false; });
     input.addEventListener("input", () => {
+      if (!input._rec){ input._rec = true; record(); }
       pal()[i].hex = input.value; chip.style.background = input.value; markDirty();
     });
     if (pal().length > 1){
       const x = document.createElement("button");
       x.type = "button"; x.className = "ed-sw-x"; x.textContent = "×"; x.title = "Remove colour";
-      x.onclick = () => { pal().splice(i, 1); markDirty(); page.render(); };
+      x.onclick = () => { record(); pal().splice(i, 1); markDirty(); page.render(); };
       sw.appendChild(x);
     }
   });
   if (pal().length < 4){
     const add = document.createElement("button");
     add.type = "button"; add.className = "ed-sw-add"; add.textContent = "+"; add.title = "Add colour";
-    add.onclick = () => { pal().push({ hex: "#808080", label: "New colour" }); markDirty(); page.render(); };
+    add.onclick = () => { record(); pal().push({ hex: "#808080", label: "New colour" }); markDirty(); page.render(); };
     wrap.appendChild(add);
   }
 }
@@ -347,6 +372,7 @@ function runCommand(cmd, a){
   const sec = a.sid ? D.sections.find(s => s.id === a.sid) : null;
   const dir = +a.dir || 0;
   let keepScroll = true;
+  const before = snap();
 
   switch (cmd){
     case "design-add": {
@@ -414,6 +440,7 @@ function runCommand(cmd, a){
     }
     default: return;
   }
+  pushHistory(before);
   markDirty();
   rerender(keepScroll, sec?.id);
 }
@@ -428,4 +455,70 @@ function rerender(keepScroll, sid){
   if (!keepScroll && after){ after.scrollIntoView({ block: "start", behavior: "smooth" }); return; }
   if (after && before !== null) window.scrollTo(0, window.scrollY + after.getBoundingClientRect().top - before);
   else window.scrollTo(0, y);
+}
+
+/* ------------------------------ undo / redo ------------------------------ */
+const MAX_HISTORY = 150;
+const undoStack = [], redoStack = [];
+let savedState = null;
+
+/* full editor state: content + title + where the admin was looking */
+function snap(){ return JSON.stringify({ data: page.data, title: rec.title, di: page.di, ai: page.ai }); }
+function contentState(){ return JSON.stringify({ data: page.data, title: rec.title }); }
+
+function pushHistory(state){
+  if (undoStack.length && undoStack[undoStack.length - 1] === state) return;
+  undoStack.push(state);
+  if (undoStack.length > MAX_HISTORY) undoStack.shift();
+  redoStack.length = 0;
+  updateHistoryUI();
+}
+/* call right before a change */
+function record(){ pushHistory(snap()); }
+
+/* typing: the input event fires after the DOM changed but before the data
+   is updated, so the data still holds the value from before this keystroke */
+function recordTextStart(){ record(); }
+
+function commitActiveField(){
+  const a = document.activeElement;
+  if (a && (a.matches?.("[data-edit]") || a.id === "edTitle" || a.classList?.contains("ed-color"))) a.blur();
+}
+
+function restore(state){
+  const o = JSON.parse(state);
+  page.data = o.data; page.di = Math.min(o.di || 0, o.data.designs.length - 1); page.ai = o.ai || {};
+  rec.title = o.title; $("#edTitle").value = o.title;
+  const y = window.scrollY;
+  page.render();
+  window.scrollTo(0, y);
+  syncDirty();
+  updateHistoryUI();
+}
+function undo(){
+  commitActiveField();
+  if (!undoStack.length) return;
+  redoStack.push(snap());
+  restore(undoStack.pop());
+  toast("Undone");
+}
+function redo(){
+  commitActiveField();
+  if (!redoStack.length) return;
+  undoStack.push(snap());
+  restore(redoStack.pop());
+  toast("Redone");
+}
+function syncDirty(){
+  const s = $("#edStatus");
+  if (contentState() === savedState){
+    dirty = false; s.textContent = "All changes saved"; s.className = "ed-status ok";
+  } else markDirty();
+}
+function updateHistoryUI(){
+  const u = $("#edUndo"), r = $("#edRedo");
+  if (!u) return;
+  u.disabled = !undoStack.length; r.disabled = !redoStack.length;
+  u.title = `Undo (Ctrl+Z)${undoStack.length ? ` · ${undoStack.length} step${undoStack.length > 1 ? "s" : ""}` : ""}`;
+  r.title = `Redo (Ctrl+Shift+Z)${redoStack.length ? ` · ${redoStack.length} step${redoStack.length > 1 ? "s" : ""}` : ""}`;
 }
