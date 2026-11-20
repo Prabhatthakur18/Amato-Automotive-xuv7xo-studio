@@ -114,3 +114,8 @@ body.editing .angle-thumb .tname [data-edit]{cursor:text;user-select:text;paddin
 .ed-icon svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .ed-btn[disabled]{opacity:.35;cursor:default;pointer-events:none}
 @media (max-width:760px){.ed-icon span{display:none}}
+
+/* title size control */
+.ed-title-size{margin-top:8px}
+.ed-ts-range{width:140px;accent-color:var(--copper);cursor:pointer}
+.ed-ts-val{font:400 9px var(--wide);letter-spacing:.16em;color:var(--txt);min-width:38px}

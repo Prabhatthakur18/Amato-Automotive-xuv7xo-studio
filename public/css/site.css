@@ -132,6 +132,7 @@ header{
 .wrap{max-width:1440px;margin:0 auto;padding:0 40px}
 .masthead{padding:84px 0 60px;display:grid;grid-template-columns:1.4fr 1fr;gap:60px;align-items:end}
 .masthead h2{font:200 clamp(46px,6.5vw,96px) var(--wide);letter-spacing:.24em;text-transform:uppercase;line-height:.95}
+.masthead h2{font-size:calc(clamp(46px,6.5vw,96px) * var(--title-scale,1))}   /* per-design size set in the editor */
 .masthead h2 sup{font-size:.22em;letter-spacing:.1em;color:var(--dim);vertical-align:super}
 .masthead .sub{margin-top:20px;display:flex;gap:14px;align-items:center}
 .masthead .sub .rule{width:44px;height:1px;background:var(--copper)}

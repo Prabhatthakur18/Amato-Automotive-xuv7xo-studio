@@ -27,6 +27,10 @@ export function setPath(obj, path, value){
   target[last] = value;
 }
 
+/* per-design title size (1 = default); kept within 40%–150% */
+export const clampScale = v => Math.min(1.5, Math.max(0.4, Math.round((+v || 1) * 100) / 100));
+const scaleStyle = v => (v && +v !== 1 ? ` style="--title-scale:${clampScale(v)}"` : "");
+
 export class ProposalPage {
   /**
    * @param {object} data   proposal content (any schema; normalised to v2)
@@ -92,6 +96,14 @@ export class ProposalPage {
         ${D.designs.length < LIMITS.designs ? this.ctl("design-add", "+ Add design", "", "", "Copies the current design as a starting point") : ""}
         ${D.designs.length > 1 ? this.ctl("design-move", "◀", `data-dir="-1"`, "", "Move this design left") + this.ctl("design-move", "▶", `data-dir="1"`, "", "Move this design right") : ""}
         ${D.designs.length > 1 ? this.ctl("design-del", "× Delete design", "", "danger") : ""}
+      </div>
+      <div class="ed-row ed-title-size" title="Size of this design's main title">
+        <span class="ed-note">Title size</span>
+        <button type="button" class="ed-ctl" data-ts="-5" aria-label="Smaller">A−</button>
+        <input type="range" class="ed-ts-range" min="40" max="150" step="5" value="${Math.round((d.titleScale || 1) * 100)}" aria-label="Title size"/>
+        <button type="button" class="ed-ctl" data-ts="5" aria-label="Larger">A+</button>
+        <span class="ed-ts-val">${Math.round((d.titleScale || 1) * 100)}%</span>
+        <button type="button" class="ed-ctl" data-ts="reset" title="Back to the default size">Reset</button>
       </div>` : "";
 
     const sections = D.sections.filter(s => this.editable || this.hasContent(s));
@@ -100,7 +112,7 @@ export class ProposalPage {
     <!-- masthead -->
     <div class="masthead rv">
       <div>
-        <h2>${this.t(`${dp}.name`)}${d.tm ? "<sup>™</sup>" : ""}</h2>
+        <h2${scaleStyle(d.titleScale)}>${this.t(`${dp}.name`)}${d.tm ? "<sup>™</sup>" : ""}</h2>
         <div class="sub"><span class="rule"></span><span class="lbl-dim">${this.m("labels.themeLabel")} — ${this.m(`${dp}.theme`)} · ${this.m("vehicle")}</span></div>
       </div>
       <div class="mast-right">

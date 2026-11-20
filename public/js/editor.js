@@ -6,7 +6,7 @@
    · click a colour chip to change it; + / × to add or remove swatches
    · Save (or Ctrl/Cmd+S), then Copy link to share /p/<id>
    ========================================================================== */
-import { ProposalPage, setPath, getPath } from "./page.js";
+import { ProposalPage, setPath, getPath, clampScale } from "./page.js";
 import { newItem, newBlock, newSection, listKey, listLimit, LIMITS, SECTION_TYPES } from "./model.js";
 import { api, AuthError, getToken, shareUrl, copyText, uploadImage } from "./admin-api.js";
 
@@ -150,6 +150,38 @@ function decorate(pg, opts = {}){
   bindMarkers();
   bindSwatches();
   bindCommands();
+  bindTitleSize();
+}
+
+/* ---- main title size (per design) ---- */
+function bindTitleSize(){
+  const box = document.querySelector(".ed-title-size");
+  if (!box) return;
+  const h2 = document.querySelector(".masthead h2");
+  const range = box.querySelector(".ed-ts-range"), val = box.querySelector(".ed-ts-val");
+  const apply = scale => {
+    scale = clampScale(scale);
+    const d = page.data.designs[page.di];
+    if (scale === 1) delete d.titleScale; else d.titleScale = scale;
+    h2.style.setProperty("--title-scale", scale);
+    range.value = Math.round(scale * 100); val.textContent = Math.round(scale * 100) + "%";
+    markDirty();
+  };
+  const current = () => page.data.designs[page.di].titleScale || 1;
+  /* slider: one undo step per drag */
+  range.addEventListener("pointerdown", () => { range._rec = false; });
+  range.addEventListener("keydown", () => { range._rec = false; });
+  range.addEventListener("input", () => {
+    if (!range._rec){ range._rec = true; record(); }
+    apply(range.value / 100);
+  });
+  box.querySelectorAll("[data-ts]").forEach(b => b.addEventListener("click", () => {
+    const step = b.dataset.ts;
+    const next = step === "reset" ? 1 : current() + (+step) / 100;
+    if (clampScale(next) === clampScale(current())) return;
+    record();
+    apply(next);
+  }));
 }
 
 /* ---- text ---- */
